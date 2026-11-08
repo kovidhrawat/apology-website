@@ -788,6 +788,38 @@ async function unlockLetter(number) {
   return null;
 }
 
+// Number box: digits only, 10 max — or "+91" followed by 10 digits.
+function cleanPhoneInput(raw) {
+  const hasPlus = raw.trim().startsWith("+");
+  let digits = raw.replace(/\D/g, "");
+  if (!hasPlus) {
+    // pasted "91XXXXXXXXXX" or "0XXXXXXXXXX" -> treat as +91 / drop the 0
+    if (digits.length > 10 && digits.startsWith("91")) return "+91 " + digits.slice(2, 12);
+    if (digits.length > 10 && digits.startsWith("0")) digits = digits.slice(1);
+    return digits.slice(0, 10);
+  }
+  const cc = digits.slice(0, 2);
+  const local = digits.slice(2, 12);
+  return "+" + cc + (local ? " " + local : "");
+}
+
+function parsePhone(value) {
+  const v = value.trim();
+  const digits = v.replace(/\D/g, "");
+  if (v.startsWith("+")) {
+    if (!digits.startsWith("91")) return { error: "Please use +91, or just the 10-digit number." };
+    if (digits.length !== 12) return { error: "Please enter a 10-digit mobile number." };
+    return { number: digits.slice(2) };
+  }
+  if (digits.length !== 10) return { error: "Please enter a 10-digit mobile number." };
+  return { number: digits };
+}
+
+gateNumber.addEventListener("input", () => {
+  const cleaned = cleanPhoneInput(gateNumber.value);
+  if (cleaned !== gateNumber.value) gateNumber.value = cleaned;
+});
+
 function showGate() {
   gateError.hidden = true;
   gateNumber.value = "";
@@ -811,11 +843,12 @@ function gateFail(msg) {
 
 gateForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const number = gateNumber.value.replace(/\D/g, "").slice(-10);
-  if (number.length !== 10) {
-    gateFail("Please enter a 10-digit mobile number.");
+  const parsed = parsePhone(gateNumber.value);
+  if (parsed.error) {
+    gateFail(parsed.error);
     return;
   }
+  const number = parsed.number;
 
   // start the song silently inside this tap, so phones allow it to play later
   primeSong();
@@ -839,7 +872,6 @@ gateForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // only the last 4 digits, so her number never goes out in full
   notifyMe(
     "Letter opened",
     "The letter was just opened with the number ending in " + number.slice(-4) + ".",
