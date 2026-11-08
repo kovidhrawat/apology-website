@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body>
   <div class="hearts" aria-hidden="true"></div>
@@ -164,15 +164,18 @@
            after one of the allowed mobile numbers is entered. -->
       <div id="letterBody"></div>
 
-      <div class="closure-end fade" aria-hidden="true">✦</div>
+      <div class="closure-end fade" aria-hidden="true"><span></span></div>
 
       <div class="closure-read fade">
         <button type="button" class="closure-read-btn" id="readBtn">I&rsquo;ve read your letter</button>
 
         <form class="closure-read-form" id="readForm" hidden>
-          <label for="readName" class="closure-read-label">May I know who&rsquo;s reading?</label>
+          <p class="closure-read-label">Now that you&rsquo;ve read my letter&hellip; any thoughts?</p>
           <input type="text" id="readName" class="closure-read-input" placeholder="Your name"
-                 maxlength="60" autocomplete="name" required />
+                 maxlength="60" autocomplete="name" aria-label="Your name" required />
+          <textarea id="readMsg" class="closure-read-input closure-read-text" rows="4" maxlength="1500"
+                    placeholder="Write something, if you&rsquo;d like (optional)"
+                    aria-label="Your message"></textarea>
           <button type="submit" class="closure-read-btn">Send</button>
         </form>
 
@@ -192,7 +195,7 @@
   <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
     <form class="gate-box" id="gateForm" autocomplete="off">
       <p class="gate-title" id="gateTitle">This letter is meant for just one person.</p>
-      <label for="gateNumber" class="gate-label">Enter your mobile number to open it</label>
+      <label for="gateNumber" class="gate-label">Enter your mobile number sweeta to open it</label>
       <input type="tel" id="gateNumber" class="gate-input" inputmode="numeric"
              placeholder="Mobile number" maxlength="16" />
       <p class="gate-error" id="gateError" role="alert" hidden></p>
@@ -205,6 +208,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=6"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

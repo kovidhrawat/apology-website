@@ -1243,3 +1243,40 @@ body.closure-open { overflow: hidden; }
   25% { transform: translateX(-8px); }
   75% { transform: translateX(8px); }
 }
+
+/* ending mark: a soft fading line instead of the star */
+.closure-end {
+  margin: 56px auto 0;
+  font-size: 0;
+  letter-spacing: 0;
+}
+
+.closure-end span {
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, transparent, rgba(201, 184, 166, 0.7), transparent);
+}
+
+.closure-end.fade.in { opacity: 1; }
+
+/* message box under the name */
+.closure-read-text {
+  width: min(280px, 100%);
+  min-height: 96px;
+  resize: vertical;
+  text-align: left;
+  line-height: 1.6;
+  border: 1px solid rgba(201, 184, 166, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.closure-read-text:focus { border-color: rgba(233, 225, 216, 0.6); }
+
+.closure-read-label {
+  text-align: center;
+  line-height: 1.4;
+  margin: 0 0 4px !important;
+}

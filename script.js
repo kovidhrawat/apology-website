@@ -56,6 +56,7 @@ const CONFIG = {
   web3formsKey: "",
   // {name} is replaced with the name they type
   readMessage: "{name} read your letter, all the way to the end. 🤍",
+  readMessageReply: "Their words:",
   readThanks: "Thank you for reading it.",
   readThanksSmall: "I've been notified that you've read my feelings.",
 };
@@ -871,16 +872,21 @@ const readName = document.getElementById("readName");
 const readDone = document.getElementById("readDone");
 const readSub = document.getElementById("readSub");
 
-function sendReadNotice(name) {
+function sendReadNotice(name, msg) {
   const when = new Date().toLocaleString();
-  const text = CONFIG.readMessage.replace("{name}", name) + "\n" + when;
+  let text = CONFIG.readMessage.replace("{name}", name);
+  if (msg) text += "\n\n" + CONFIG.readMessageReply + "\n" + msg;
+  text += "\n\n" + when;
   const jobs = [];
   if (CONFIG.ntfyTopic) {
     jobs.push(
       fetch("https://ntfy.sh/" + encodeURIComponent(CONFIG.ntfyTopic), {
         method: "POST",
         body: text,
-        headers: { Title: "Letter read by " + name.replace(/[^\x20-\x7E]/g, "?"), Tags: "envelope" },
+        headers: {
+          Title: (msg ? "A message from " : "Letter read by ") + name.replace(/[^\x20-\x7E]/g, "?"),
+          Tags: msg ? "love_letter" : "envelope",
+        },
       })
     );
   }
@@ -891,7 +897,7 @@ function sendReadNotice(name) {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           access_key: CONFIG.web3formsKey,
-          subject: name + " read your letter",
+          subject: msg ? name + " sent you a message" : name + " read your letter",
           from_name: "Goodbye letter",
           message: text,
         }),
@@ -918,7 +924,7 @@ readForm.addEventListener("submit", (e) => {
     return;
   }
   readForm.querySelector('button[type="submit"]').disabled = true;
-  sendReadNotice(name);
+  sendReadNotice(name, document.getElementById("readMsg").value.trim());
   readForm.hidden = true;
   readDone.hidden = false;
   readNote.textContent = CONFIG.readThanks;
