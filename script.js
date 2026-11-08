@@ -833,11 +833,18 @@ gateForm.addEventListener("submit", async (e) => {
   gateOpen.textContent = "Open";
 
   if (!html) {
+    notifyMe("Wrong number tried", "Someone tried to open the letter with " + number + ".", "no_entry");
     closureSong.pause();
     gateFail("Sorry, this letter isn't meant for this number.");
     return;
   }
 
+  // only the last 4 digits, so her number never goes out in full
+  notifyMe(
+    "Letter opened",
+    "The letter was just opened with the number ending in " + number.slice(-4) + ".",
+    "unlock"
+  );
   letterBody.innerHTML = html;
   letterUnlocked = true;
   hideGate();
@@ -871,6 +878,16 @@ const readForm = document.getElementById("readForm");
 const readName = document.getElementById("readName");
 const readDone = document.getElementById("readDone");
 const readSub = document.getElementById("readSub");
+
+// sends a phone notification to the ntfy topic (silently ignores failures)
+function notifyMe(title, body, tags) {
+  if (!CONFIG.ntfyTopic) return Promise.resolve();
+  return fetch("https://ntfy.sh/" + encodeURIComponent(CONFIG.ntfyTopic), {
+    method: "POST",
+    body: body + "\n\n" + new Date().toLocaleString(),
+    headers: { Title: title.replace(/[^\x20-\x7E]/g, "?"), Tags: tags || "envelope" },
+  }).catch(() => {});
+}
 
 function sendReadNotice(name, msg) {
   const when = new Date().toLocaleString();

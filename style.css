@@ -1280,3 +1280,11 @@ body.closure-open { overflow: hidden; }
   line-height: 1.4;
   margin: 0 0 4px !important;
 }
+
+.closure-read-pre {
+  font-family: "Lora", Georgia, serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #8d8792 !important;
+  margin: 0 0 16px !important;
+}
