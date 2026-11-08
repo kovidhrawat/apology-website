@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ask browsers (incl. Instagram's in-app one) to always check for the latest version -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="description" content="A little corner of the internet to say I'm sorry." />
+  <title>A Goodbye, For Now</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css?v=5" />
+</head>
+<body>
+  <div class="hearts" aria-hidden="true"></div>
+
+  <!-- sound toggle -->
+  <button id="soundToggle" class="sound-toggle" aria-pressed="false" title="Toggle music">
+    <span aria-hidden="true">🔈</span>
+  </button>
+
+  <main class="wrap">
+    <!-- ===== HERO ===== -->
+    <section class="card hero hero-dark reveal" id="envelopeCard">
+      <h1 class="hero-title">I didn&rsquo;t know you&rsquo;d visit this website again&hellip;</h1>
+      <p class="lead" id="typeLine">&nbsp;</p>
+
+      <button type="button" class="envelope" id="openClosure" aria-label="Open the message">
+        <span class="env-back" aria-hidden="true"></span>
+        <span class="env-letter" aria-hidden="true">
+          <span class="env-letter-title">A little something I never got to say…</span>
+          <span class="env-letter-lines"></span>
+        </span>
+        <span class="env-front" aria-hidden="true"></span>
+        <span class="env-flap" aria-hidden="true"></span>
+        <span class="env-seal" aria-hidden="true">✦</span>
+      </button>
+      <p class="env-hint">tap the envelope to open it</p>
+    </section>
+
+    <!-- ===== LETTER ===== -->
+    <section id="letter" class="card reveal">
+      <h2>The honest version</h2>
+      <p>
+        I messed up. I&rsquo;m not going to dress it up or make excuses. I said
+        things (or didn&rsquo;t say things) that hurt you, and you didn&rsquo;t
+        deserve that.
+      </p>
+      <p>
+        You&rsquo;re one of the kindest, funniest, most genuinely good people I
+        know, and the last thing I ever want is to be a reason you feel bad.
+      </p>
+      <p class="handwritten">I really am sorry. And I miss talking to you.</p>
+    </section>
+
+    <!-- ===== REASONS (flip cards) ===== -->
+    <section class="card reveal">
+      <h2>Things I appreciate about you</h2>
+      <p class="lead">Tap a card to open it 💌</p>
+      <div class="flip-grid" id="reasonsGrid"></div>
+    </section>
+
+    <!-- ===== PROMISES ===== -->
+    <section class="card reveal">
+      <h2>What I&rsquo;ll do better</h2>
+      <p class="lead">Tap any promise to hold me to it 💗</p>
+      <ul class="promises" id="promises">
+        <li data-emoji="🎧">🎧 Actually listen instead of waiting for my turn to talk.</li>
+        <li data-emoji="⏳">⏳ Give you space when you need it, without making it weird.</li>
+        <li data-emoji="💬">💬 Say the hard thing early instead of letting it pile up.</li>
+        <li data-emoji="🌱">🌱 Show it with actions, not just a cute website.</li>
+      </ul>
+      <div class="react-bar" id="reactBar" aria-label="Send a reaction">
+        <button type="button" data-emoji="❤️">❤️</button>
+        <button type="button" data-emoji="🥹">🥹</button>
+        <button type="button" data-emoji="✨">✨</button>
+        <button type="button" data-emoji="💐">💐</button>
+        <button type="button" data-emoji="🫶">🫶</button>
+      </div>
+      <p class="react-count" id="reactCount" hidden></p>
+    </section>
+
+    <!-- ===== FORGIVENESS METER ===== -->
+    <section class="card reveal center">
+      <h2>The forgiveness meter</h2>
+      <p class="lead" id="meterLabel">Slide it as far as you honestly feel.</p>
+      <input
+        type="range"
+        id="meter"
+        min="0"
+        max="100"
+        value="0"
+        aria-label="Forgiveness meter"
+      />
+      <div class="meter-readout"><span id="meterPct">0</span>% forgiven</div>
+    </section>
+
+    <!-- ===== INTERACTIVE BUTTONS ===== -->
+    <section class="card reveal center">
+      <h2>So&hellip; can you forgive me?</h2>
+      <p class="lead">No pressure. Whenever you&rsquo;re ready.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="yesBtn">Okay, I forgive you 💛</button>
+        <button class="btn btn-ghost" id="noBtn">Not yet</button>
+      </div>
+      <p class="response" id="response" hidden></p>
+    </section>
+
+    <!-- ===== PHOTO GALLERY (revealed after "I forgive you") ===== -->
+    <section class="card center gallery-card" id="gallery" hidden>
+      <h2>Here are some of my cute pics</h2>
+      <p class="lead">You can have them. A small peace offering. 📸</p>
+
+      <div class="gallery-stage">
+        <button class="nav prev" id="galPrev" aria-label="Previous photo">‹</button>
+        <figure class="gallery-frame">
+          <img id="galImg" alt="" />
+          <figcaption id="galCaption"></figcaption>
+        </figure>
+        <button class="nav next" id="galNext" aria-label="Next photo">›</button>
+      </div>
+
+      <div class="gallery-dots" id="galDots"></div>
+      <div class="gallery-count"><span id="galIndex">1</span> / <span id="galTotal">1</span></div>
+
+      <div class="btn-row">
+        <a class="btn btn-primary" id="galDownload" download>Save this one ⬇</a>
+        <button class="btn btn-ghost" id="galDownloadAll">Save them all</button>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <p>
+        Made with regret, hope, and
+        <button class="heart-tap" id="heartTap" title="tap me">💛</button>
+        <span id="heartCount">0</span> hearts.
+      </p>
+      <p class="secret" id="secret" hidden></p>
+    </footer>
+  </main>
+
+  <!-- ===== CLOSURE SCREEN (opens from the hero button) ===== -->
+  <div class="closure" id="closure" role="dialog" aria-modal="true" aria-labelledby="closureTitle" hidden>
+    <div class="closure-sky" id="closureSky" aria-hidden="true"></div>
+
+    <button type="button" class="closure-back" id="closureBack" title="Go back">
+      <span aria-hidden="true">←</span> back
+    </button>
+
+    <button type="button" class="closure-music" id="closureMusic" aria-pressed="true" title="Pause the song">
+      <span class="closure-music-icon" aria-hidden="true">❚❚</span>
+      <span class="closure-music-label">pause song</span>
+    </button>
+
+    <article class="closure-letter">
+      <div class="closure-sheet">
+      <!-- The letter is encrypted (letter.enc.json) and only appears here
+           after one of the allowed mobile numbers is entered. -->
+      <div id="letterBody"></div>
+
+      <div class="closure-end fade" aria-hidden="true">✦</div>
+
+      <div class="closure-read fade">
+        <button type="button" class="closure-read-btn" id="readBtn">I&rsquo;ve read your letter</button>
+
+        <form class="closure-read-form" id="readForm" hidden>
+          <label for="readName" class="closure-read-label">May I know who&rsquo;s reading?</label>
+          <input type="text" id="readName" class="closure-read-input" placeholder="Your name"
+                 maxlength="60" autocomplete="name" required />
+          <button type="submit" class="closure-read-btn">Send</button>
+        </form>
+
+        <div id="readDone" hidden>
+          <p class="closure-read-note" id="readNote"></p>
+          <p class="closure-read-sub" id="readSub"></p>
+        </div>
+      </div>
+      </div>
+    </article>
+
+    <!-- The song: music/song.mp3 -->
+    <audio id="closureSong" src="music/song.mp3" preload="auto" loop playsinline></audio>
+  </div>
+
+  <!-- ===== NUMBER CHECK before the letter opens ===== -->
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+    <form class="gate-box" id="gateForm" autocomplete="off">
+      <p class="gate-title" id="gateTitle">This letter is meant for just one person.</p>
+      <label for="gateNumber" class="gate-label">Enter your mobile number to open it</label>
+      <input type="tel" id="gateNumber" class="gate-input" inputmode="numeric"
+             placeholder="Mobile number" maxlength="16" />
+      <p class="gate-error" id="gateError" role="alert" hidden></p>
+      <div class="gate-actions">
+        <button type="button" class="gate-btn gate-cancel" id="gateCancel">Cancel</button>
+        <button type="submit" class="gate-btn gate-open" id="gateOpen">Open</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="script.js?v=5"></script>
+</body>
+</html>

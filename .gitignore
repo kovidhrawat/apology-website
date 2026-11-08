@@ -1,0 +1,4 @@
+.DS_Store
+
+# private letter source + allowed numbers — never commit these
+private/
