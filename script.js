@@ -553,12 +553,48 @@ function buildSky() {
   }
 }
 
+// The song is routed through a volume knob (gain) so it can start silently
+// inside her tap, then fade in later. Phones only allow sound that starts in
+// a tap, and iPhones ignore the normal volume setting, so this works on both.
+let songCtx = null;
+let songGain = null;
+
+function ensureSongGraph() {
+  try {
+    // play even when the iPhone's silent switch is on
+    if (navigator.audioSession) navigator.audioSession.type = "playback";
+    if (!songCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      songCtx = new AC();
+      songGain = songCtx.createGain();
+      songGain.gain.value = 0;
+      songCtx.createMediaElementSource(closureSong).connect(songGain).connect(songCtx.destination);
+    }
+    if (songCtx.state !== "running") songCtx.resume();
+  } catch (err) {
+    console.warn("Falling back to plain audio:", err);
+    songCtx = null;
+    songGain = null;
+  }
+}
+
 function fadeVolume(to, ms, done) {
   cancelAnimationFrame(volumeAnim);
+  clearTimeout(fadeVolume.timer);
+  if (songGain) {
+    const g = songGain.gain;
+    const now = songCtx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(to, now + ms / 1000);
+    if (done) fadeVolume.timer = setTimeout(done, ms);
+    return;
+  }
   const from = closureSong.volume;
   const start = performance.now();
-  function step(now) {
-    const t = Math.min(1, (now - start) / ms);
+  function step(t0) {
+    const t = Math.min(1, (t0 - start) / ms);
     closureSong.volume = from + (to - from) * t;
     if (t < 1) volumeAnim = requestAnimationFrame(step);
     else if (done) done();
@@ -573,13 +609,27 @@ function setMusicButton(playing) {
   closureMusic.querySelector(".closure-music-label").textContent = playing ? "pause song" : "play song";
 }
 
-function playSong() {
-  cancelAnimationFrame(volumeAnim);
-  closureSong.volume = 0;
-  setMusicButton(true);
+// start the song with no sound (call this inside a tap)
+function primeSong() {
+  ensureSongGraph();
+  if (songGain) {
+    songGain.gain.cancelScheduledValues(0);
+    songGain.gain.value = 0;
+  } else {
+    closureSong.volume = 0;
+  }
   const p = closureSong.play();
+  if (p && p.catch) p.catch(() => {});
+}
+
+function playSong() {
+  primeSong();
+  setMusicButton(true);
   fadeVolume(0.85, 4000);
-  if (p && p.catch) p.catch(() => setMusicButton(false));
+  // if the browser still refused, show "play song" so one tap starts it
+  setTimeout(() => {
+    if (closureSong.paused && closureIsOpen) setMusicButton(false);
+  }, 600);
 }
 
 function stopSong() {
@@ -767,9 +817,7 @@ gateForm.addEventListener("submit", async (e) => {
   }
 
   // start the song silently inside this tap, so phones allow it to play later
-  closureSong.muted = true;
-  const warm = closureSong.play();
-  if (warm && warm.catch) warm.catch(() => {});
+  primeSong();
 
   gateOpen.disabled = true;
   gateOpen.textContent = "Opening…";
@@ -785,7 +833,6 @@ gateForm.addEventListener("submit", async (e) => {
 
   if (!html) {
     closureSong.pause();
-    closureSong.muted = false;
     gateFail("Sorry, this letter isn't meant for this number.");
     return;
   }
@@ -794,7 +841,6 @@ gateForm.addEventListener("submit", async (e) => {
   letterUnlocked = true;
   hideGate();
   closureSong.currentTime = 0;
-  closureSong.muted = false;
   openClosure();
 });
 
