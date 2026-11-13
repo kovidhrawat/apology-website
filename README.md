@@ -1,4 +1,4 @@
-# I'm Sorry 🥺
+# I'm Sorry and Goodbye
 
 A small, cute, single-page apology site. Plain HTML/CSS/JS — no build step.
 
